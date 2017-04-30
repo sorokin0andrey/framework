@@ -24,7 +24,7 @@ class Model
     {
         if(!self::$connected) {
             try {
-                self::setup(new \PDO('mysql:host=localhost;dbname=name', 'root', '', [\PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC]));
+                self::setup(new \PDO('mysql:host=localhost;dbname=mehanica', 'root', '', [\PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC]));
             } catch (\PDOException $e) {
                 print "Error!: " . $e->getMessage() . "<br/>";
             }
@@ -36,6 +36,7 @@ class Model
 
     public static function setup($dbi, $charset = 'utf8') {
         if(is_object($dbi)) {
+            $dbi->exec("set names $charset");
             self::$db = $dbi;
             self::$connected = true;
         }
@@ -83,6 +84,11 @@ class Model
             }
             return $cObj;
         } else return false;
+    }
+
+    public function last()
+    {
+        return $this->query('select * from '.self::$table.' order by id DESC')->fetch(\PDO::FETCH_OBJ);
     }
 
     public function count()
